@@ -5,10 +5,7 @@ from vehicle_user_utils import VehicleUserUtils
 class TestVehicleUserUtils(unittest.TestCase):
     """
         TestVehicleUserUtils is a unit testing class for the VehicleUserUtils class
-
-
     """
-
 
     def setUp(self):
 
@@ -41,6 +38,7 @@ class TestVehicleUserUtils(unittest.TestCase):
             }
         })
 
+    
     def test_stores_filter_for_userId(self):
         inserted_filter = {
             'year': [2017, 2016],
@@ -51,6 +49,7 @@ class TestVehicleUserUtils(unittest.TestCase):
         self.utils.store_filters_for_user('joe', inserted_filter)
         self.assertDictContainsSubset({'joe': inserted_filter}, self.utils.user_id_filters) 
 
+    
     def test_returns_one_user_id_named_sara(self):
         actual_user_ids = self.utils.get_user_ids_to_notifty({
             'make': 'Dodge',
@@ -64,6 +63,7 @@ class TestVehicleUserUtils(unittest.TestCase):
         self.assertIn('sara', actual_user_ids)
         self.assertEqual(len(actual_user_ids), 1)
 
+    
     def test_returns_two_user_ids_named_flem_and_kaliegh(self):
         actual_user_ids = self.utils.get_user_ids_to_notifty({
             'make': 'Toyota',
@@ -78,6 +78,7 @@ class TestVehicleUserUtils(unittest.TestCase):
         self.assertIn('kaliegh', actual_user_ids)
         self.assertEqual(len(actual_user_ids), 2)
 
+    
     def test_returns_all_users_with_manual_transmission_type(self):
         similar_user_filter_utils = VehicleUserUtils({
             'flem': {
@@ -164,7 +165,7 @@ class TestVehicleUserUtils(unittest.TestCase):
             'transmission_type': ['automatic', 'manual']
         }
 
-        result = self.utils.userFiltersContainVehicleSpecValue({
+        result = self.utils.user_filters_contain_vehicle_spec_value({
             'make': 'Subaru',
             'model': 'WRX',
             'year': 2017,
@@ -182,7 +183,7 @@ class TestVehicleUserUtils(unittest.TestCase):
             'transmission_type': ['automatic', 'manual']
         }
 
-        result = self.utils.userFiltersContainVehicleSpecValue({
+        result = self.utils.user_filters_contain_vehicle_spec_value({
             'make': 'Subaru',
             'model': 'WRX',
             'year': 2017,
@@ -191,7 +192,4 @@ class TestVehicleUserUtils(unittest.TestCase):
             'type': 'truck'
         }, user_id_filter)
 
-        self.assertTrue(result)
-
-if __name__ == '__main__':
-    unittest.main()
+        self.assertEqual(result, False)
