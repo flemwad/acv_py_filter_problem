@@ -47,14 +47,15 @@
 * Storing the user_id_filters on the Class constructor, as to reduce race conditions, can be initialized via constructor
 * store_filters_for_user simply sets the user_id and user_filter_spec on the Classes user_id_filters dict
 * Created a dict users_to_notify of the user_id key mapped to whether or not it should be returned in the list
+* Short circuiting the user_filter_spec search if any of the AND's don't work out
+* OR'ing together any user_filter_spec values that are an array, if not just comparing
 * Using dict.get and list.index where possible
 * Using reduce to grab just they user_ids who end with a True value 
 
 ### Runtime:
-* Best case should be O(n^2) as you must loop through each user, and then each user filter at every pass
+* Best case should be O(n) as you must loop through each user, and if a filter check fails immediately for each user
 * Average case should be O(n^2) when the .index scan on the user_id_filter returns early
-* Worst case would be O(n^3) when the .index scan must traverse the entire list
-* I believe this may be able to be improved to O(n log n) with Sorted Lists, calling .sorted on dicts and then
+* Worst case would be O(n^3) when the vehicle_spec lookup and  .index scan must traverse the both the dict and entire list
 
 ### Potential Race Conditions:
 * Should be none, but I could be wrong 

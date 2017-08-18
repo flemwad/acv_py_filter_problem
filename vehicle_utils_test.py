@@ -158,14 +158,14 @@ class TestVehicleUserUtils(unittest.TestCase):
         self.assertIn('kirby', actual_manual_user_ids)
         self.assertEqual(len(actual_manual_user_ids), 4)
 
-    def test_returns_True_when_vehicle_spec_values_in_user_id_filters(self):
+    def test_returns_True_when_user_should_be_notified(self):
         user_id_filter = {
             'year': 2017, 
             'type': 'sedan', 
             'transmission_type': ['automatic', 'manual']
         }
 
-        result = self.utils.user_filters_contain_vehicle_spec_value({
+        result = self.utils.should_notify_user({
             'make': 'Subaru',
             'model': 'WRX',
             'year': 2017,
@@ -176,14 +176,14 @@ class TestVehicleUserUtils(unittest.TestCase):
 
         self.assertTrue(result)
 
-    def test_returns_False_when_vehicle_spec_values_partially_in_user_id_filters(self):
+    def test_returns_False_user_should_not_be_notified(self):
         user_id_filter = {
             'year': 2017, 
             'type': 'sedan', 
             'transmission_type': ['automatic', 'manual']
         }
 
-        result = self.utils.user_filters_contain_vehicle_spec_value({
+        result = self.utils.should_notify_user({
             'make': 'Subaru',
             'model': 'WRX',
             'year': 2017,

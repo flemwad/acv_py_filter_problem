@@ -10,20 +10,21 @@ class VehicleUserUtils:
         self.user_id_filters = user_id_filters 
 
     # this could probably be a private fn, but i couldn't figure out how to access that in the test
-    def does_user_filter_match_vehicle_spec(self, vehicle_spec, user_filters):
+    def should_notify_user(self, vehicle_spec, user_filters):
         """
         Given a vehicle_spec dict and a user's filter dict, figure out if the user filter matches
         """
 
-        user_should_notify = True
+        user_filter_match = True
 
         # we need to evaluate every user filter against the relevant vehicle_spec value
         # 0(1) on an early failure, O(n^2) now I'm pretty sure at worse case (True)
         for filter_key, filter_val in user_filters.items():
-            # one of the ANDs was False we can return early
-            if user_should_notify is False:
+            # one of the ANDs was False we can return early speeding up the checks
+            if user_filter_match is False:
                 return False
             else:
+                # Last vehicle spec matched a user filter, keep going
                 vehicle_val = vehicle_spec.get(filter_key)
 
                 # OR user filter values if the user's specific filter is an array of values
@@ -33,14 +34,13 @@ class VehicleUserUtils:
                         # average case is O(1) so remains O(n) or O(n^2) here
                         # unless Amortized Worst Case then O(n^3)... I think
                         # TODO is there a better way to short circuit this?
-                        sorted(filter_val).index(vehicle_val)
-                        user_should_notify = True
+                        user_filter_match = filter_val.index(vehicle_val) >= 0
                     except ValueError:
                         # user filter list value didn't contain the vehicle value
-                        user_should_notify = False
+                        user_filter_match = False
                 else:
                     # it wasn't a list so we can just compare the two values
-                    user_should_notify = (filter_val == vehicle_val)
+                    user_filter_match = (filter_val == vehicle_val)
 
         return True
 
@@ -57,7 +57,7 @@ class VehicleUserUtils:
         # adds O(n) time complexity here I believe
         for user_id, user_filters in self.user_id_filters.items():
             # AND our dict user_id value with the returned filtered value
-            users_to_notify[user_id] = self.does_user_filter_match_vehicle_spec(vehicle_spec, user_filters)
+            users_to_notify[user_id] = self.should_notify_user(vehicle_spec, user_filters)
 
         #the accumulation function, returning a mutated new array of user_ids
         def user_id_filter_match(user_ids, user_id):
