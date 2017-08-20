@@ -1,4 +1,5 @@
 import functools
+from binary_search import binary_search
 
 class VehicleUserUtils:
     """
@@ -29,12 +30,11 @@ class VehicleUserUtils:
 
                 # OR user filter values if the user's specific filter is an array of values
                 if isinstance(filter_val, list):
+                    # TODO is there a better way to short circuit this?
                     try:
-                        # finding the index should simulate our || condition nice
-                        # average case is O(1) so remains O(n) or O(n^2) here
-                        # unless Amortized Worst Case then O(n^3)... I think
-                        # TODO is there a better way to short circuit this?
-                        user_filter_match = filter_val.index(vehicle_val) >= 0
+                        # binary search here should reduce this to log n filter search time
+                        # no sort needed since happens on insert
+                        user_filter_match = binary_search(filter_val, vehicle_val)
                     except ValueError:
                         # user filter list value didn't contain the vehicle value
                         user_filter_match = False
@@ -75,5 +75,10 @@ class VehicleUserUtils:
         """
         Set the key user_id to value user_filter_spec on self.user_id_filters dict
         """
+        #sort any array filter values so we can look them up in log n time later
+        for filter_key, filter_val in user_filter_spec.items():
+            if isinstance(filter_val, list):
+                user_filter_spec[filter_key] = sorted(filter_val)
+            
         self.user_id_filters[user_id] = user_filter_spec
         

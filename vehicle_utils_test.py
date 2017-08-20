@@ -38,7 +38,7 @@ class TestVehicleUserUtils(unittest.TestCase):
             }
         })
 
-    
+
     def test_stores_filter_for_userId(self):
         inserted_filter = {
             'year': [2017, 2016],
@@ -47,9 +47,23 @@ class TestVehicleUserUtils(unittest.TestCase):
         }
 
         self.utils.store_filters_for_user('joe', inserted_filter)
-        self.assertDictContainsSubset({'joe': inserted_filter}, self.utils.user_id_filters) 
+        self.assertDictContainsSubset({'joe': inserted_filter}, self.utils.user_id_filters)
 
-    
+
+    def test_soring_filter_for_userId_sorts_lists(self):
+        inserted_filter = {
+            'year': [2017, 2016],
+            'make': ['Jeep', 'Chevrolet'],
+            'type': 'truck'
+        }
+
+        self.utils.store_filters_for_user('joe', inserted_filter)
+
+        joe = self.utils.user_id_filters['joe']
+        self.assertEqual(joe['year'], [2016, 2017])
+        self.assertEqual(joe['make'], ['Chevrolet', 'Jeep'])
+
+
     def test_returns_one_user_id_named_sara(self):
         actual_user_ids = self.utils.get_user_ids_to_notifty({
             'make': 'Dodge',
@@ -158,6 +172,7 @@ class TestVehicleUserUtils(unittest.TestCase):
         self.assertIn('kirby', actual_manual_user_ids)
         self.assertEqual(len(actual_manual_user_ids), 4)
 
+
     def test_returns_True_when_user_should_be_notified(self):
         user_id_filter = {
             'year': 2017, 
@@ -175,6 +190,7 @@ class TestVehicleUserUtils(unittest.TestCase):
         }, user_id_filter)
 
         self.assertTrue(result)
+
 
     def test_returns_False_user_should_not_be_notified(self):
         user_id_filter = {
